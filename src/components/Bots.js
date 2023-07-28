@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useReducer, useState } from "react";
-import BoltArmy from "./BoltArmy";
+import React, { useEffect, useReducer } from "react";
+import BotArmy from "./BotArmy";
 import BotCollection from "./BotCollection";
+import { BotContext } from "../context/BotContext";
 
 const actionTypes = {
   FILL_BOLTS: "fill_bots",
@@ -24,7 +25,7 @@ const botReducer = (state, action) => {
   }
 };
 
-const Bolts = () => {
+const Bots = () => {
   const [botData, dispatch] = useReducer(botReducer, {
     bots: [],
     armyBots: [],
@@ -60,10 +61,12 @@ const Bolts = () => {
 
   return (
     <div className="bot">
-      <BoltArmy bots={botData.armyBots} onAction={removeBotFromArmy} />
-      <BotCollection bots={botData.bots} onAction={addBotToArmy} />
+      <BotArmy bots={botData.armyBots} onAction={removeBotFromArmy} />
+      <BotContext.Provider value={botData.bots}>
+        <BotCollection onAction={addBotToArmy} />
+      </BotContext.Provider>
     </div>
   );
 };
 
-export default Bolts;
+export default Bots;

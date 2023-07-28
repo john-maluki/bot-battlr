@@ -1,8 +1,8 @@
 import "./App.css";
-import Bolts from "./components/Bolts";
+import Bots from "./components/Bots";
 
 function App() {
-  return <Bolts />;
+  return <Bots />;
 }
 
 export default App;

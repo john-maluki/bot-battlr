@@ -1,7 +1,7 @@
 import React from "react";
-import Bolt from "./Bolt";
+import Bolt from "./Bot";
 
-const BoltArmy = ({ bots, onAction }) => {
+const BotArmy = ({ bots, onAction }) => {
   return (
     <section className="bot__army">
       {bots.map((bot) => (
@@ -11,4 +11,4 @@ const BoltArmy = ({ bots, onAction }) => {
   );
 };
 
-export default BoltArmy;
+export default BotArmy;

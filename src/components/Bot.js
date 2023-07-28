@@ -1,6 +1,6 @@
 import React from "react";
 
-const Bolt = ({ bot, onAction }) => {
+const Bot = ({ bot, onAction }) => {
   const { name, catchphrase, avatar_url } = bot;
   return (
     <div className="card" onClick={onAction}>
@@ -11,8 +11,9 @@ const Bolt = ({ bot, onAction }) => {
         <h1>{name}</h1>
         <p>{catchphrase}</p>
       </div>
+      <i class="fa fa-times" aria-hidden="true"></i>
     </div>
   );
 };
 
-export default Bolt;
+export default Bot;

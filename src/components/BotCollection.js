@@ -1,11 +1,13 @@
-import React from "react";
-import Bolt from "./Bolt";
+import React, { useContext } from "react";
+import Bot from "./Bot";
+import { BotContext } from "../context/BotContext";
 
-const BotCollection = ({ bots, onAction }) => {
+const BotCollection = ({ onAction }) => {
+  const bots = useContext(BotContext);
   return (
     <section className="bot__collection">
       {bots.map((bot) => (
-        <Bolt key={bot.id} bot={bot} onAction={() => onAction(bot.id)} />
+        <Bot key={bot.id} bot={bot} onAction={() => onAction(bot.id)} />
       ))}
     </section>
   );
