@@ -56,3 +56,9 @@
   min-height: 500px;
   padding: 20px;
 }
+
+.card__btn-remove {
+  width: 100px;
+  height: 50px;
+  background-color: #a9c315;
+}
