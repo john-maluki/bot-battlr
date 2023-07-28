@@ -62,3 +62,10 @@
   height: 50px;
   background-color: #a9c315;
 }
+
+.bot-specs {
+  margin: 0 auto;
+  width: 300px;
+  display: flex;
+  justify-content: center;
+}

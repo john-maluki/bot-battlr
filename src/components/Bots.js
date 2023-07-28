@@ -1,15 +1,17 @@
-import React, { useEffect, useReducer } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { toast } from "react-toastify";
 
 import BotArmy from "./BotArmy";
 import BotCollection from "./BotCollection";
 import { BotContext } from "../context/BotContext";
+import BotSpecs from "./BotSpecs";
 
 const actionTypes = {
   FILL_BOLTS: "fill_bots",
   ADD_ARMY_BOLT: "add_army_bots",
   REMOVE_FROM_ARMY: "remove_army_bots",
   REMOVE_FROM_BOTS: "remove_from_bots",
+  CURRENT_SELECTED_BOT: "current_selected_bot",
 };
 
 const botReducer = (state, action) => {
@@ -26,15 +28,20 @@ const botReducer = (state, action) => {
     case actionTypes.REMOVE_FROM_BOTS:
       const newBots = state.bots.filter((bot) => bot.id !== action.payLoad);
       return { ...state, bots: newBots };
+
+    case actionTypes.CURRENT_SELECTED_BOT:
+      return { ...state, currentSelectedBot: action.payLoad };
     default:
       return state;
   }
 };
 
 const Bots = () => {
+  const [isBotSpecOpen, setIsBotSpecOpen] = useState(false);
   const [botData, dispatch] = useReducer(botReducer, {
     bots: [],
     armyBots: [],
+    currentSelectedBot: {},
   });
 
   const fetchBoltsFromServer = () => {
@@ -45,15 +52,23 @@ const Bots = () => {
       );
   };
 
-  const addBotToArmy = (botId) => {
-    const bot = findBotById(botId);
-    const isBotAdded = botData.armyBots.includes(bot);
+  const addBotToArmy = () => {
+    const isBotAdded = botData.armyBots.includes(botData.currentSelectedBot);
     if (!isBotAdded) {
-      dispatch({ type: actionTypes.ADD_ARMY_BOLT, payLoad: bot });
-      toast.success(`${bot.name} added successfully`);
+      dispatch({
+        type: actionTypes.ADD_ARMY_BOLT,
+        payLoad: botData.currentSelectedBot,
+      });
+      toast.success(`${botData.currentSelectedBot.name} added successfully`);
     } else {
-      toast.info(`${bot.name} already selected!!`);
+      toast.info(`${botData.currentSelectedBot.name} already selected!!`);
     }
+  };
+
+  const setSelelectedBot = (botId) => {
+    const bot = findBotById(botId);
+    dispatch({ type: actionTypes.CURRENT_SELECTED_BOT, payLoad: bot });
+    setIsBotSpecOpen(true);
   };
 
   const removeBotFromArmy = (botId) => {
@@ -68,7 +83,7 @@ const Bots = () => {
       },
     }).then((resp) => {
       if (resp.ok) {
-        toast.info("Deleted");
+        toast.info("Bot Deleted!!");
         dispatch({ type: actionTypes.REMOVE_FROM_BOTS, payLoad: botId });
         dispatch({ type: actionTypes.REMOVE_FROM_ARMY, payLoad: botId });
       }
@@ -83,15 +98,27 @@ const Bots = () => {
     fetchBoltsFromServer();
   }, []);
 
+  const goBack = () => {
+    setIsBotSpecOpen(false);
+  };
+
   return (
     <div className="bot">
       <BotArmy bots={botData.armyBots} onAction={removeBotFromArmy} />
-      <BotContext.Provider value={botData.bots}>
-        <BotCollection
-          onAction={addBotToArmy}
-          onBotDelete={deleteBotFromServer}
+      {isBotSpecOpen ? (
+        <BotSpecs
+          bot={botData.currentSelectedBot}
+          onGoBack={goBack}
+          onAddBot={addBotToArmy}
         />
-      </BotContext.Provider>
+      ) : (
+        <BotContext.Provider value={botData.bots}>
+          <BotCollection
+            onAction={setSelelectedBot}
+            onBotDelete={deleteBotFromServer}
+          />
+        </BotContext.Provider>
+      )}
     </div>
   );
 };
