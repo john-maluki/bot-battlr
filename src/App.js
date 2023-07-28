@@ -1,12 +1,8 @@
 import "./App.css";
+import Bolts from "./components/Bolts";
 
 function App() {
-  return (
-    <div className="bot">
-      <section className="bot__army"></section>
-      <section className="bot__collection"></section>
-    </div>
-  );
+  return <Bolts />;
 }
 
 export default App;
