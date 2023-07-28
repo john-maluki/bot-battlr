@@ -19,6 +19,8 @@ The following have been used on this project:
 - CSS
 - JavaScript/React
 
+## Project Setup & Pre-requisite Data
+
 - In your project directory, create a `db.json` file and use the json data below for your server DB.
 
   ```json

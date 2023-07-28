@@ -1,9 +1,9 @@
 import React from "react";
 
-const Bolt = ({ bot, addBotToArmy }) => {
+const Bolt = ({ bot, onAction }) => {
   const { name, catchphrase, avatar_url } = bot;
   return (
-    <div className="card" onClick={addBotToArmy}>
+    <div className="card" onClick={onAction}>
       <div className="card__img-container">
         <img className="card__img" src={avatar_url} alt={name} />
       </div>
