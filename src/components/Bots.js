@@ -1,10 +1,11 @@
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useMemo, useReducer, useState } from "react";
 import { toast } from "react-toastify";
 
 import BotArmy from "./BotArmy";
 import BotCollection from "./BotCollection";
 import { BotContext } from "../context/BotContext";
 import BotSpecs from "./BotSpecs";
+import SortBar from "./SortBar";
 
 const actionTypes = {
   FILL_BOLTS: "fill_bots",
@@ -43,6 +44,7 @@ const Bots = () => {
     armyBots: [],
     currentSelectedBot: {},
   });
+  const [botClassFilter, setBotClassFilter] = useState(["All"]);
 
   const fetchBoltsFromServer = () => {
     fetch("http://localhost:4000/bots")
@@ -102,6 +104,21 @@ const Bots = () => {
     setIsBotSpecOpen(false);
   };
 
+  const filterByBotClass = (filters) => {
+    setBotClassFilter(filters);
+  };
+
+  const filteredBots = useMemo(() => {
+    return botData.bots.filter((bot) => {
+      console.log("Method called");
+      if (botClassFilter.includes("All")) {
+        return true;
+      } else {
+        return botClassFilter.includes(bot.bot_class);
+      }
+    });
+  }, [filterByBotClass]);
+
   return (
     <div className="bot">
       <BotArmy bots={botData.armyBots} onAction={removeBotFromArmy} />
@@ -112,12 +129,18 @@ const Bots = () => {
           onAddBot={addBotToArmy}
         />
       ) : (
-        <BotContext.Provider value={botData.bots}>
-          <BotCollection
-            onAction={setSelelectedBot}
-            onBotDelete={deleteBotFromServer}
-          />
-        </BotContext.Provider>
+        <>
+          <BotContext.Provider value={botData.bots}>
+            <SortBar onFilterByBotClass={filterByBotClass} />
+          </BotContext.Provider>
+
+          <BotContext.Provider value={filteredBots}>
+            <BotCollection
+              onAction={setSelelectedBot}
+              onBotDelete={deleteBotFromServer}
+            />
+          </BotContext.Provider>
+        </>
       )}
     </div>
   );
