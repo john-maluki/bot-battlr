@@ -64,13 +64,25 @@ const Bots = () => {
   const addBotToArmy = () => {
     const currentBot = botData.currentSelectedBot;
     const isBotAdded = botData.armyBots.includes(currentBot);
+    const currentBotClassInArmy = isBotClassRepresentedInArmy(
+      currentBot.bot_class
+    );
     if (!isBotAdded) {
-      dispatch({
-        type: actionTypes.ADD_ARMY_BOLT,
-        payLoad: currentBot,
-      });
-      dispatch({ type: actionTypes.REMOVE_FROM_BOTS, payLoad: currentBot.id });
-      toast.success(`${currentBot.name} added successfully`);
+      if (!Boolean(currentBotClassInArmy)) {
+        dispatch({
+          type: actionTypes.ADD_ARMY_BOLT,
+          payLoad: currentBot,
+        });
+        dispatch({
+          type: actionTypes.REMOVE_FROM_BOTS,
+          payLoad: currentBot.id,
+        });
+        toast.success(`${currentBot.name} added successfully`);
+      } else {
+        toast.error(
+          `${currentBot.bot_class} group is alraedy represented by '${currentBotClassInArmy?.name}'!!`
+        );
+      }
     } else {
       toast.info(`${currentBot.name} already selected!!`);
     }
@@ -112,6 +124,10 @@ const Bots = () => {
 
   const findArmyBotById = (botId) => {
     return botData.armyBots.find((bot) => bot.id === botId);
+  };
+
+  const isBotClassRepresentedInArmy = (botClass) => {
+    return botData.armyBots.find((bot) => bot.bot_class === botClass);
   };
 
   useEffect(() => {
