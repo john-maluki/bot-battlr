@@ -80,7 +80,7 @@ const Bots = () => {
         toast.success(`${currentBot.name} added successfully`);
       } else {
         toast.error(
-          `${currentBot.bot_class} group is alraedy represented by '${currentBotClassInArmy?.name}'!!`
+          `${currentBot.bot_class} group is already represented by '${currentBotClassInArmy?.name}'!!`
         );
       }
     } else {
