@@ -1,7 +1,7 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { BotContext } from "../context/BotContext";
 
-const SortBar = ({ onFilterByBotClass }) => {
+const SortBar = ({ onFilterByBotClass, onBotsSort }) => {
   const bots = useContext(BotContext);
 
   const handleSelectChange = (e) => {
@@ -25,20 +25,31 @@ const SortBar = ({ onFilterByBotClass }) => {
   return (
     <div className="sort-bar">
       <span>
-        Health <i className="fa fa-sort" aria-hidden="true"></i>
+        Health{" "}
+        <i
+          className="fa fa-sort"
+          aria-hidden="true"
+          onClick={() => onBotsSort("health")}
+        ></i>
       </span>
       <span>
-        Damage <i className="fa fa-sort" aria-hidden="true"></i>
+        Damage{" "}
+        <i
+          className="fa fa-sort"
+          aria-hidden="true"
+          onClick={() => onBotsSort("damage")}
+        ></i>
       </span>
       <span>
-        Armor <i className="fa fa-sort" aria-hidden="true"></i>
+        Armor{" "}
+        <i
+          className="fa fa-sort"
+          aria-hidden="true"
+          onClick={() => onBotsSort("armor")}
+        ></i>
       </span>
       <span>
-        <select
-          defaultValue={botClasses[9]}
-          multiple
-          onChange={handleSelectChange}
-        >
+        <select multiple onChange={handleSelectChange}>
           <option value="All">All</option>
           {optionList}
         </select>

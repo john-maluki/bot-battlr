@@ -6,6 +6,7 @@ import BotCollection from "./BotCollection";
 import { BotContext } from "../context/BotContext";
 import BotSpecs from "./BotSpecs";
 import SortBar from "./SortBar";
+import { sortBotsByArmor, sortBotsByDamage, sortBotsByHealth } from "../utils";
 
 const actionTypes = {
   FILL_BOLTS: "fill_bots",
@@ -45,6 +46,9 @@ const Bots = () => {
     currentSelectedBot: {},
   });
   const [botClassFilter, setBotClassFilter] = useState(["All"]);
+  const [toggleSortByHealth, setToggleSortByHealth] = useState(false);
+  const [toggleSortByDamage, setToggleSortByDamage] = useState(false);
+  const [toggleSortByArmor, setToggleSortByArmor] = useState(false);
 
   const fetchBoltsFromServer = () => {
     fetch("http://localhost:4000/bots")
@@ -108,6 +112,23 @@ const Bots = () => {
     setBotClassFilter(filters);
   };
 
+  const sortBots = (key) => {
+    // sorts bots collection by health, damage or armor
+    let sortedBots = [];
+    if (key === "health") {
+      setToggleSortByHealth((toggleSortByHealth) => !toggleSortByHealth);
+      sortedBots = sortBotsByHealth(botData.bots, key, !toggleSortByHealth);
+    } else if (key === "damage") {
+      setToggleSortByDamage((toggleSortByDamage) => !toggleSortByDamage);
+      sortedBots = sortBotsByDamage(botData.bots, key, !toggleSortByDamage);
+    } else {
+      // sort by armor
+      setToggleSortByArmor((toggleSortByArmor) => !toggleSortByArmor);
+      sortedBots = sortBotsByArmor(botData.bots, key, !toggleSortByArmor);
+    }
+    dispatch({ type: actionTypes.FILL_BOLTS, payLoad: sortedBots });
+  };
+
   const filteredBots = useMemo(() => {
     return botData.bots.filter((bot) => {
       console.log("Method called");
@@ -131,7 +152,10 @@ const Bots = () => {
       ) : (
         <>
           <BotContext.Provider value={botData.bots}>
-            <SortBar onFilterByBotClass={filterByBotClass} />
+            <SortBar
+              onFilterByBotClass={filterByBotClass}
+              onBotsSort={sortBots}
+            />
           </BotContext.Provider>
 
           <BotContext.Provider value={filteredBots}>
