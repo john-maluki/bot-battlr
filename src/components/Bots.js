@@ -11,6 +11,7 @@ import { sortBotsByArmor, sortBotsByDamage, sortBotsByHealth } from "../utils";
 const actionTypes = {
   FILL_BOLTS: "fill_bots",
   ADD_ARMY_BOLT: "add_army_bots",
+  ADD_BOLT: "add_bot",
   REMOVE_FROM_ARMY: "remove_army_bots",
   REMOVE_FROM_BOTS: "remove_from_bots",
   CURRENT_SELECTED_BOT: "current_selected_bot",
@@ -22,6 +23,8 @@ const botReducer = (state, action) => {
       return { ...state, bots: [...action.payLoad] };
     case actionTypes.ADD_ARMY_BOLT:
       return { ...state, armyBots: [...state.armyBots, action.payLoad] };
+    case actionTypes.ADD_BOLT:
+      return { ...state, bots: [action.payLoad, ...state.bots] };
     case actionTypes.REMOVE_FROM_ARMY:
       const newArmyBots = state.armyBots.filter(
         (armyBot) => armyBot.id !== action.payLoad
@@ -59,15 +62,17 @@ const Bots = () => {
   };
 
   const addBotToArmy = () => {
-    const isBotAdded = botData.armyBots.includes(botData.currentSelectedBot);
+    const currentBot = botData.currentSelectedBot;
+    const isBotAdded = botData.armyBots.includes(currentBot);
     if (!isBotAdded) {
       dispatch({
         type: actionTypes.ADD_ARMY_BOLT,
-        payLoad: botData.currentSelectedBot,
+        payLoad: currentBot,
       });
-      toast.success(`${botData.currentSelectedBot.name} added successfully`);
+      dispatch({ type: actionTypes.REMOVE_FROM_BOTS, payLoad: currentBot.id });
+      toast.success(`${currentBot.name} added successfully`);
     } else {
-      toast.info(`${botData.currentSelectedBot.name} already selected!!`);
+      toast.info(`${currentBot.name} already selected!!`);
     }
   };
 
@@ -78,7 +83,12 @@ const Bots = () => {
   };
 
   const removeBotFromArmy = (botId) => {
+    const armyBot = findArmyBotById(botId);
     dispatch({ type: actionTypes.REMOVE_FROM_ARMY, payLoad: botId });
+    dispatch({
+      type: actionTypes.ADD_BOLT,
+      payLoad: armyBot,
+    });
   };
 
   const deleteBotFromServer = (botId) => {
@@ -98,6 +108,10 @@ const Bots = () => {
 
   const findBotById = (botId) => {
     return botData.bots.find((bot) => bot.id === botId);
+  };
+
+  const findArmyBotById = (botId) => {
+    return botData.armyBots.find((bot) => bot.id === botId);
   };
 
   useEffect(() => {
