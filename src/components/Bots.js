@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useReducer, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { toast } from "react-toastify";
 
 import BotArmy from "./BotArmy";
@@ -6,7 +6,8 @@ import BotCollection from "./BotCollection";
 import { BotContext } from "../context/BotContext";
 import BotSpecs from "./BotSpecs";
 import SortBar from "./SortBar";
-import { sortBotsByArmor, sortBotsByDamage, sortBotsByHealth } from "../utils";
+import { sortBotsByArmor, sortBotsByDamage, sortBotsByHealth } from "./utils";
+import { RotatingLines } from "react-loader-spinner";
 
 const actionTypes = {
   FILL_BOLTS: "fill_bots",
@@ -15,6 +16,8 @@ const actionTypes = {
   REMOVE_FROM_ARMY: "remove_army_bots",
   REMOVE_FROM_BOTS: "remove_from_bots",
   CURRENT_SELECTED_BOT: "current_selected_bot",
+  LOADING_BOTS: "loading_bots",
+  LOADING_BOTS_ERROR: "loading_bots_error",
 };
 
 const botReducer = (state, action) => {
@@ -36,6 +39,10 @@ const botReducer = (state, action) => {
 
     case actionTypes.CURRENT_SELECTED_BOT:
       return { ...state, currentSelectedBot: action.payLoad };
+    case actionTypes.LOADING_BOTS:
+      return { ...state, isLoading: action.payLoad };
+    case actionTypes.LOADING_BOTS_ERROR:
+      return { ...state, hasError: action.payLoad };
     default:
       return state;
   }
@@ -47,6 +54,8 @@ const Bots = () => {
     bots: [],
     armyBots: [],
     currentSelectedBot: {},
+    isLoading: false,
+    hasError: false,
   });
   const [botClassFilter, setBotClassFilter] = useState(["All"]);
   const [toggleSortByHealth, setToggleSortByHealth] = useState(false);
@@ -54,11 +63,17 @@ const Bots = () => {
   const [toggleSortByArmor, setToggleSortByArmor] = useState(false);
 
   const fetchBoltsFromServer = () => {
+    dispatch({ type: actionTypes.LOADING_BOTS, payLoad: true });
     fetch("http://localhost:4000/bots")
       .then((resp) => resp.json())
-      .then((bots) =>
-        dispatch({ type: actionTypes.FILL_BOLTS, payLoad: bots })
-      );
+      .then((bots) => {
+        dispatch({ type: actionTypes.FILL_BOLTS, payLoad: bots });
+        dispatch({ type: actionTypes.LOADING_BOTS, payLoad: false });
+      })
+      .catch(() => {
+        dispatch({ type: actionTypes.LOADING_BOTS, payLoad: false });
+        dispatch({ type: actionTypes.LOADING_BOTS_ERROR, payLoad: true });
+      });
   };
 
   const addBotToArmy = () => {
@@ -159,16 +174,13 @@ const Bots = () => {
     dispatch({ type: actionTypes.FILL_BOLTS, payLoad: sortedBots });
   };
 
-  const filteredBots = useMemo(() => {
-    return botData.bots.filter((bot) => {
-      console.log("Method called");
-      if (botClassFilter.includes("All")) {
-        return true;
-      } else {
-        return botClassFilter.includes(bot.bot_class);
-      }
-    });
-  }, [filterByBotClass]);
+  const filteredBots = botData.bots.filter((bot) => {
+    if (botClassFilter.includes("All")) {
+      return true;
+    } else {
+      return botClassFilter.includes(bot.bot_class);
+    }
+  });
 
   return (
     <div className="bot">
@@ -179,6 +191,20 @@ const Bots = () => {
           onGoBack={goBack}
           onAddBot={addBotToArmy}
         />
+      ) : botData.isLoading ? (
+        <div className="bot__load">
+          <RotatingLines
+            strokeColor="grey"
+            strokeWidth="5"
+            animationDuration="0.75"
+            width="96"
+            visible={true}
+          />
+        </div>
+      ) : botData.hasError ? (
+        <div className="bot__load-error">
+          <h3>Network Error!! Please check your Internent!</h3>
+        </div>
       ) : (
         <>
           <BotContext.Provider value={botData.bots}>

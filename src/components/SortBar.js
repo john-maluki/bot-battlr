@@ -48,12 +48,17 @@ const SortBar = ({ onFilterByBotClass, onBotsSort }) => {
           onClick={() => onBotsSort("armor")}
         ></i>
       </span>
-      <span>
-        <select multiple onChange={handleSelectChange}>
+      <div>
+        Filter By Bot Class
+        <select
+          className="multi-select-filter"
+          multiple
+          onChange={handleSelectChange}
+        >
           <option value="All">All</option>
           {optionList}
         </select>
-      </span>
+      </div>
     </div>
   );
 };
