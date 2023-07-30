@@ -6,7 +6,12 @@ import BotCollection from "./BotCollection";
 import { BotContext } from "../context/BotContext";
 import BotSpecs from "./BotSpecs";
 import SortBar from "./SortBar";
-import { sortBotsByArmor, sortBotsByDamage, sortBotsByHealth } from "./utils";
+import {
+  DOMAIN_URL,
+  sortBotsByArmor,
+  sortBotsByDamage,
+  sortBotsByHealth,
+} from "./utils";
 import { RotatingLines } from "react-loader-spinner";
 
 const actionTypes = {
@@ -64,7 +69,7 @@ const Bots = () => {
 
   const fetchBoltsFromServer = () => {
     dispatch({ type: actionTypes.LOADING_BOTS, payLoad: true });
-    fetch("http://localhost:4000/bots")
+    fetch(`${DOMAIN_URL}/bots`)
       .then((resp) => resp.json())
       .then((bots) => {
         dispatch({ type: actionTypes.FILL_BOLTS, payLoad: bots });
@@ -119,7 +124,7 @@ const Bots = () => {
   };
 
   const deleteBotFromServer = (botId) => {
-    fetch(`http://localhost:4000/bots/${botId}`, {
+    fetch(`${DOMAIN_URL}/bots/${botId}`, {
       method: "DELETE",
       headers: {
         "Content-type": "application/json",

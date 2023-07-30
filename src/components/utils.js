@@ -1,3 +1,6 @@
+// const DOMAIN_URL = "http://localhost:4000";
+const DOMAIN_URL = "https://bot-bottlr.onrender.com";
+
 const sortBotByKey = (bots, key, asc = true) => {
   return bots.sort((b1, b2) => {
     if (asc) {
@@ -57,4 +60,5 @@ export {
   sortBotsByDamage,
   sortBotsByHealth,
   getRandomFontIcons,
+  DOMAIN_URL,
 };
